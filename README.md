@@ -88,3 +88,12 @@ The story, characters, map and code are original to this project. All third-part
 - Ground and wood textures from [Poly Haven](https://polyhaven.com)
 
 The full list is in [`public/assets/CREDITS.txt`](public/assets/CREDITS.txt).
+
+Open-source software this project depends on (installed through npm, not copied into the repo):
+
+- [Three.js](https://github.com/mrdoob/three.js) (MIT) for rendering, model loading and animation
+- [Vite](https://github.com/vitejs/vite) (MIT) as the dev server and bundler
+- [Puppeteer](https://github.com/puppeteer/puppeteer) (Apache-2.0) for the test and screenshot scripts
+- [FBX2glTF](https://github.com/facebookincubator/FBX2glTF) and [glTF Transform](https://github.com/donmccurdy/glTF-Transform) were used once to convert and shrink the models
+
+No game code was copied from any other repository.
