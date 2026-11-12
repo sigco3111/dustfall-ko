@@ -4,6 +4,7 @@ import { SITES, groundHeight, box, fx } from './world.js';
 import { spawnHuman, spawnAnimal, spawnGang, removeTagged, aliveTagged, LOOKS, findWildSpot, reviveTown, damageActor } from './actors.js';
 import { poseHuman, humanAction } from './models.js';
 import * as THREE from 'three';
+import { tx } from './i18n.js';
 
 const say = (who, text) => ({ who, text });
 const N = (text) => ({ text });
@@ -350,7 +351,7 @@ const S = {
   },
   enter() {
     const st = this.cur();
-    if (st) { if (st.enter) st.enter(); G.ui.setObjective(`${this.m + 1} · ${MISSIONS[this.m].title}`, st.obj); }
+    if (st) { if (st.enter) st.enter(); G.ui.setObjective(`${this.m + 1} · ${tx(MISSIONS[this.m].title)}`, st.obj); }
     else G.ui.setObjective('Free Roam', G.bounty ? (G.bounty.state === 'done' ? 'Collect your bounty reward from Sheriff Brandt.' : `Bring in ${G.bounty.name}, last seen near ${G.bounty.place}.`) : 'Take a warrant from the bounty board, hunt, fish, or try the tables.');
   },
   update(dt) {

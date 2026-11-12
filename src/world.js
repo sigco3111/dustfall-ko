@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { G, clamp, lerp, rand, smoothstep, sfx } from './core.js';
 import { A } from './assets.js';
+import { tx } from './i18n.js';
 
 export const WORLD = 1400, HALF = 700, WATER_Y = -1.1, BRIDGE_Y = 2.75;
 
@@ -221,12 +222,13 @@ function wallMat(color, w, h) {
   return new THREE.MeshLambertMaterial({ color: new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5).multiplyScalar(1.5), map: t });
 }
 function signMesh(text, w, h, bg = '#2a1a10', fg = '#f1e3c6') {
+  text = tx(text);
   const tex = canvasTex(512, Math.round(512 * h / w), (g, cw, ch) => {
     g.fillStyle = bg; g.fillRect(0, 0, cw, ch);
     g.strokeStyle = fg; g.lineWidth = 6; g.strokeRect(8, 8, cw - 16, ch - 16);
     g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
-    let size = ch * 0.5; g.font = `bold ${size}px Rockwell, Georgia, serif`;
-    while (g.measureText(text).width > cw - 50 && size > 12) { size -= 2; g.font = `bold ${size}px Rockwell, Georgia, serif`; }
+    let size = ch * 0.5; g.font = `bold ${size}px Rockwell, Georgia, "Noto Serif KR", "Nanum Myeongjo", "Malgun Gothic", "Apple SD Gothic Neo", serif`;
+    while (g.measureText(text).width > cw - 50 && size > 12) { size -= 2; g.font = `bold ${size}px Rockwell, Georgia, "Noto Serif KR", "Nanum Myeongjo", "Malgun Gothic", "Apple SD Gothic Neo", serif`; }
     g.fillText(text, cw / 2, ch / 2 + 2);
   });
   return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshLambertMaterial({ map: tex }));

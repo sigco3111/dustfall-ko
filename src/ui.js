@@ -200,7 +200,7 @@ export function initUI() {
       const S = G.story; let h = `<div class="cols"><div><h3>${t('The story so far')}</h3>`;
       S.missions.forEach((m, i) => {
         if (i > S.m) return;
-        h += row((i < S.m ? '✔ ' : '▸ ') + m.title, i < S.m ? m.recap : (S.cur() ? S.cur().obj : ''), '', '');
+        h += row((i < S.m ? '✔ ' : '▸ ') + tx(m.title), i < S.m ? m.recap : (S.cur() ? S.cur().obj : ''), '', '');
       });
       if (S.m >= S.missions.length) h += `<p class="dim">${t('The main story is finished. The basin is yours to roam.')}</p>`;
       if (G.bounty) h += `<h3>${t('Open warrant')}</h3>${row(G.bounty.name, G.bounty.state === 'done' ? 'Collect your reward from Sheriff Brandt.' : `Last seen near ${G.bounty.place}. Reward ${fmt(G.bounty.reward)}.`, '', '')}`;
