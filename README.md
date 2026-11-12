@@ -31,7 +31,8 @@
 - 한글 글꼴 대체 목록(시스템 글꼴만 사용, 외부 요청 없음): 본문 `Pretendard`, `Noto Sans KR`, `Apple SD Gothic Neo`, `Malgun Gothic` / 제목체 `Noto Serif KR`, `Nanum Myeongjo` (기존 세리프 제목 스타일 유지). 한글 줄바꿈은 `word-break: keep-all`.
 - `vite.config.js` 추가: GitHub Pages 배포용 빌드를 `docs/` 에 출력(`base './'`, 해시 파일명은 소문자 16진수).
 - `tools/check-i18n.mjs`(번역 키 검사), `tools/test-i18n.mjs`(단위 테스트) 추가, `npm test` 로 실행.
-- 아직 영어인 부분(다음 라운드): 퀘스트·현상금 상세 문구, 스토리 대사(`src/story.js`), 건물 간판, 인물 이름. 진행 기록은 [NOTES.md](NOTES.md).
+- 번역한 범위(2차, D2): 스토리·퀘스트 전체(`src/story.js`: 장 제목·요약·목표, NPC 대사와 선택지, 인트로·엔딩, 현상금 수배장 문구·이름·장소, 마을 사람 인사말, 결투 문구), 건물 간판(캔버스 텍스처, 한글 글꼴 대체 목록 적용), 인물·NPC 이름, 이벤트 NPC(길 잃은 여행자) 대사. 인명 표기와 말투 결정은 [NOTES.md](NOTES.md)에 기록.
+- 아직 영어인 부분(다음 라운드): 낚시·사냥·블랙잭 세부 문구 점검. 진행 기록은 [NOTES.md](NOTES.md).
 
 ## 직접 실행
 
