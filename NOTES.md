@@ -50,5 +50,14 @@ Sorrel Basin 소렐 분지 · Marrow Creek 마로 크릭 · Hollow Camp 할로 �
 - 배포 확인(D2): 커밋 7건(게임 5 · 문서 2) 모두 한글 메시지. 사이트 파일 24개 200 OK, 이전 번들 404. 라이브 새 게임: 인트로 4줄·1장 목표·일지 모두 한국어, 콘솔 오류/경고 0건(in-page 훅).
 - 커밋 순서(배포 유지): tools → src → docs/bundle(신규 번들 추가) → docs/index.html → 이전 번들 삭제 → README/NOTES. 웹 편집기·삭제 대화상자는 영어(또는 Copilot 제안) 메시지·설명이 미리 채워지므로 메시지를 바꾸고 설명을 비운다(설명란은 Backspace 키 이벤트에 windowsVirtualKeyCode 필요).
 
-## 남은 일 (D3)
-- 낚시/사냥 세부 문구, 블랙잭 문구 점검, 한글 줄바꿈·길이 확인(간판 글자 크기), 영어 모드 회귀 확인.
+## 완료 (D3) — 보완·검사 확장·스크린샷
+- 작업 사본: /mnt/workspace/dustfall-ko (Node 22 + 포터블 npm 10.9.2 → `node /tmp/npm/package/bin/npm-cli.js ci`). git 푸시 불가 → 웹 업로더/웹 편집기.
+- 남은 영어 전수 점검: 소스의 모든 문자열 리터럴(주석 제외)을 토큰 단위로 훑어 사전에 없는 것을 찾음(`tools/check-i18n.mjs --list`의 새 스캐너). 리터럴은 모두 사전에 있었고, 실제 누락은 **실행 중 조합되는 문구** 7개: 가죽 벗기기 안내의 짐승 이름 `deer/wolf/rabbit/cow/horse`, 말 이름 `the mare`, `fists`(소문자 무기명). → `src/i18n-ko.js` 7항목 추가(총 544). 낚시·블랙잭·사냥 토스트는 D1/D2에서 이미 사전에 있어 변경 없음(확인만).
+- 검사 확장: 사전 외에 조합 문구 268건(마을 사람/현상금 이름 조합, 가죽 벗기기, 말 이름, 소문자 무기·탄약, 물고기 이름, 아이템 사용)을 `tx()`에 통과시켜 영어가 남으면 실패. 단위 테스트 35건. 남은 영어 목록은 0.
+- 빌드: 번들 `index-b003ba16.js` (이전 `index-6bd427f1.js` 삭제), CSS 불변 `index-b8b2f4bf.css`. 커밋 순서: tools → src → docs/bundle → docs/index.html → 이전 번들 삭제 → 스크린샷 → README → NOTES. 모두 한글 메시지, 설명란 비움.
+- 웹 업로더: `upload/main/<폴더>` 에 파일을 올리고(CDP `DOM.setFileInputFiles`), 커밋 메시지 입력란에 포커스 후 전체 선택·삭제·입력, 설명란은 선택·삭제. 삭제 대화상자(React)는 `#commit-message-input`/`#commit-description-input`, 버튼은 JS `click()` (좌표 클릭은 반응하지 않았음). 새 폴더(`docs/screenshots`)도 같은 업로드 URL 로 생성됨.
+- 스크린샷(README): 라이브 사이트를 1280×720 iframe(뷰포트가 1536×643이라 0.89배 축소 후 clip scale 로 캡처 → 1280×720 WebP q85)으로 6장: 01-title, 02-controls, 03-intro, 04-world, 05-journal, 06-satchel (각 40–82 KB). 상점·블랙잭은 마을까지 이동이 필요해 생략(배낭으로 대체). in-page 훅(console.error/warn, error, unhandledrejection) 기록 0건.
+- 알려진 원작 동작: 일지의 통계 값이 0이면 숫자가 비어 보임(`row()`가 0을 거짓으로 취급).
+
+## 남은 일
+- 한글 줄바꿈·길이 확인(간판 글자 크기), 영어 모드 회귀 확인, 상점·블랙잭 화면 스크린샷 추가.
