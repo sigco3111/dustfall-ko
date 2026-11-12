@@ -3,86 +3,64 @@
 </p>
 
 <p align="center">
-  <b>An original open-world western that runs in your browser.</b><br>
-  Ride, hunt, fish, play cards, and settle an old score in the Sorrel Basin.
+  <b>더스트폴(Dustfall) 한글화</b> — 브라우저에서 즐기는 1887년 서부 오픈월드 게임<br>
+  말을 달리고, 사냥하고, 낚시하고, 카드를 치고, 소렐 분지에서 오래된 빚을 청산하세요.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Three.js-0.187-1d1410?logo=threedotjs&logoColor=white" alt="Three.js">
-  <img src="https://img.shields.io/badge/Vite-8-b3261e?logo=vite&logoColor=white" alt="Vite">
-  <img src="https://img.shields.io/badge/assets-CC0-e0a526" alt="CC0 assets">
-  <img src="https://img.shields.io/badge/built%20with-Claude%20Fable%205.2-23404a" alt="Built with Claude Fable 5.2">
+  <a href="https://sigco3111.github.io/dustfall-ko/"><b>▶ 바로 플레이: https://sigco3111.github.io/dustfall-ko/</b></a>
 </p>
 
-<p align="center">
-  <img src="docs/riding.jpg" alt="Riding through a pine meadow" width="100%">
-</p>
+## 안내 (NOTICE)
 
-> **About this project.** Dustfall was created to test the Claude Fable 5.2 model. The whole game, from the
-> story to the shaders, was written by the model in Claude Code from chat prompts.
+- **이 저장소는 비공식 한글화입니다.** 원작 게임은 **Dustfall**, 제작자는 **webKing021** 입니다.
+  - 원작 저장소: <https://github.com/webKing021/dustfall> (원작 플레이: <https://dustfalls.netlify.app/>)
+  - 한글화 기준 원작 커밋: `9e03e817a54d5296bdcd1207d46c7a8eb3270969`
+- 한글화 시점에 원작 저장소에는 **라이선스 파일이 없습니다.** 이 저장소는 어떤 라이선스도 부여하지 않으며, 원작의 권리는 모두 원작자에게 있습니다. 이 저장소에 `LICENSE` 파일을 두지 않은 것도 같은 이유입니다.
+- 원작 README가 밝힌 대로 모델·텍스처 등 서드파티 에셋은 CC0(퍼블릭 도메인)이며, 출처 표기는 아래 [크레딧](#크레딧)과 [`public/assets/CREDITS.txt`](public/assets/CREDITS.txt)에 원작 그대로 유지했습니다.
+- 원작자 표기를 달아 공개하며, **권리자가 요청하면 즉시 내리겠습니다.** 요청은 이 저장소의 Issues 로 남겨 주세요.
+- 원작은 “Built with Claude Fable 5.2” 로 만들어졌다고 밝히고 있습니다.
 
-## Screenshots
+## 한글화 내용
 
-| | |
-| --- | --- |
-| ![Gunfight at Vulture Gulch](docs/gunfight.jpg) | ![Main street of Marrow Creek](docs/town.jpg) |
-| ![Talking to Tobias Finch](docs/dialogue.jpg) | ![The town at night](docs/night.jpg) |
+원작 대비 바꾼 점 (게임 규칙·월드·에셋은 그대로):
 
-## Features
+- `src/i18n.js`, `src/i18n-ko.js` 추가: 영어 원문을 키로 쓰는 한국어 사전. 언어는 `localStorage`(`dustfall.lang`)에 저장되며 **기본값은 한국어**, 영어 원문도 그대로 남아 있습니다.
+- 타이틀 화면의 `한국어 / English` 전환 버튼과 일시정지 메뉴의 언어 전환, 타이틀 화면 하단의 한글화 크레딧 줄.
+- 번역한 범위(1차): 타이틀·메뉴·설정·조작법, HUD(생명력/스태미나/집중/허기, 시계, 명예, 현상금, 탄약), 상호작용 안내문, 알림 메시지, 배낭·지도·일지·휴식·모닥불·상점·블랙잭 화면, 아이템·무기·지명, 주요 알림/튜토리얼 힌트.
+- 한글 글꼴 대체 목록(시스템 글꼴만 사용, 외부 요청 없음): 본문 `Pretendard`, `Noto Sans KR`, `Apple SD Gothic Neo`, `Malgun Gothic` / 제목체 `Noto Serif KR`, `Nanum Myeongjo` (기존 세리프 제목 스타일 유지). 한글 줄바꿈은 `word-break: keep-all`.
+- `vite.config.js` 추가: GitHub Pages 배포용 빌드를 `docs/` 에 출력(`base './'`, 해시 파일명은 소문자 16진수).
+- `tools/check-i18n.mjs`(번역 키 검사), `tools/test-i18n.mjs`(단위 테스트) 추가, `npm test` 로 실행.
+- 아직 영어인 부분(다음 라운드): 퀘스트·현상금 상세 문구, 스토리 대사(`src/story.js`), 건물 간판, 인물 이름. 진행 기록은 [NOTES.md](NOTES.md).
 
-- **A living basin.** A town, two ranches, a rail depot, outlaw camps, a river and a bridge, with day and night, rain, storms and dust.
-- **Your horse.** Calm a wild mare, name her, then ride, gallop, whistle, feed and pat her to build trust.
-- **Gunplay.** Revolver, rifle and silent bow, headshots, a slow-time Focus ability and a quick-draw duel.
-- **Law and honour.** Crimes need witnesses. Bounties bring posses, and your honour changes prices and the ending.
-- **Life on the trail.** Hunt and skin game, cook at camp, fish the river, eat, sleep, and play blackjack at the saloon.
-- **Story.** Six chapters with dialogue and choices, then free roam with repeatable bounty hunts and chance encounters.
-- **Saving.** Progress is saved in the browser, automatically and with F5.
+## 직접 실행
 
-## Play
-
-You need [Node.js](https://nodejs.org) 20 or newer.
+[Node.js](https://nodejs.org) 20 이상이 필요합니다.
 
 ```bash
-git clone https://github.com/webKing021/dustfall.git
-cd dustfall
+git clone https://github.com/sigco3111/dustfall-ko.git
+cd dustfall-ko
 npm install
-npm run dev
+npm run dev      # 개발 서버
+npm run build    # docs/ 에 배포용 빌드
+npm test         # 번역 사전 검사
 ```
 
-Open the address Vite prints, then click the game to capture the mouse. On Windows you can also double-click `play.bat`.
+## 조작법
 
-## Controls
-
-| Key | Action | Key | Action |
+| 키 | 동작 | 키 | 동작 |
 | --- | --- | --- | --- |
-| W A S D | Move / steer horse | 1 2 3 4 | Holster, revolver, rifle, bow |
-| Mouse | Look | Right / left mouse | Aim / shoot (punch when holstered) |
-| Shift / Ctrl | Sprint or gallop / walk | R | Reload |
-| Space / C | Jump / crouch | Q | Focus (slow time) |
-| E | Talk, mount, loot, skin, use | X | Quick eat or drink |
-| H / B | Whistle for horse / pat horse | G | Rob someone you are aiming at |
-| Tab / M / J | Satchel / map / journal | F5 / Esc | Save / pause |
+| W A S D | 이동 / 말 조종 | 1 2 3 4 | 총집에 넣기, 리볼버, 소총, 활 |
+| 마우스 | 시점 | 마우스 오른쪽 / 왼쪽 | 조준 / 발사 (총을 넣었으면 주먹질) |
+| Shift / Ctrl | 달리기·질주 / 천천히 걷기 | R | 재장전 |
+| Space / C | 점프 / 웅크리기 | Q | 집중 (시간 늦추기) |
+| E | 대화·말 타기·약탈·가죽 벗기기·사용 | X | 빠르게 먹기·마시기 |
+| H / B | 휘파람 / 말 쓰다듬기 | G | 조준한 상대 강탈 |
+| Tab / M / J | 배낭 / 지도 / 일지 | F5 / Esc | 저장 / 일시정지 |
 
-## How it is built
+## 크레딧
 
-- **Engine:** [Three.js](https://threejs.org) with plain JavaScript modules, bundled by [Vite](https://vite.dev). No game framework.
-- **People:** one rigged body with skeletal animation. Clothes are generated in code as smoothed layers over the body, and faces, hats and guns are attached to bones.
-- **World:** procedural terrain with four blended photo textures, wind-animated grass that follows the camera, and trees that swap to cheap stand-ins at a distance.
-- **Sound:** every effect and the music are synthesised with the Web Audio API. There are no audio files.
-
-| File | Holds |
-| --- | --- |
-| `src/world.js` | Terrain, sky, weather, water, grass, buildings, collision |
-| `src/models.js` | Animated people and animals, clothing, faces |
-| `src/actors.js` | AI, the law, wildlife, chance encounters |
-| `src/player.js` | Player, horse, gunplay, camera |
-| `src/story.js` | Characters, missions, bounties, shops, saving |
-| `src/ui.js` | HUD, dialogue, menus, map, blackjack |
-| `tools/` | Headless browser tests, profiler and screenshot scripts |
-
-## Credits
-
-The story, characters, map and code are original to this project. All third-party art is public domain (CC0):
+원작 README의 크레딧을 그대로 옮깁니다 (The story, characters, map and code are original to the Dustfall project by webKing021. All third-party art is public domain (CC0)):
 
 - Models and animations by [Quaternius](https://quaternius.com)
 - Ground and wood textures from [Poly Haven](https://polyhaven.com)
@@ -96,4 +74,4 @@ Open-source software this project depends on (installed through npm, not copied 
 - [Puppeteer](https://github.com/puppeteer/puppeteer) (Apache-2.0) for the test and screenshot scripts
 - [FBX2glTF](https://github.com/facebookincubator/FBX2glTF) and [glTF Transform](https://github.com/donmccurdy/glTF-Transform) were used once to convert and shrink the models
 
-No game code was copied from any other repository.
+한글화: sigco3111 (비공식). 원작: [webKing021/dustfall](https://github.com/webKing021/dustfall).
