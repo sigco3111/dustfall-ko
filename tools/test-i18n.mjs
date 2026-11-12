@@ -22,6 +22,8 @@ const cases = [
   ['FINCH\'S GENERAL STORE', '핀치 잡화점'], ['DR. HALE  PHYSICIAN', '헤일 의원'],
   ['Ah. I have a wire here with your description on it. $12.00 would make it disappear, all quite legal.', '아. 여기 당신 인상착의가 적힌 전보가 있습니다. $12.00 정도면 없던 일로 해 드리지요. 아주 합법적으로요.'],
   ['"God keep you, friend."', '“하느님이 당신을 지켜 주시길, 친구.”'],
+  ['[E] Skin deer', '[E] 사슴 가죽 벗기기'], ['[E] Skin cow', '[E] 소 가죽 벗기기'], ['[E] Mount the mare    [B] Pat', '[E] 암말 타기    [B] 쓰다듬기'],
+  ['the mare is too far away.', '암말은 너무 멀리 있습니다.'], ["You don't own a fists yet.", '아직 맨주먹이 없습니다.'],
   ['Untranslated line stays.', 'Untranslated line stays.'], ['', ''],
 ];
 for (const [a, b] of cases) assert.equal(tx(a), b, a);

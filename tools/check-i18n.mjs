@@ -25,6 +25,29 @@ for (const [k, v] of Object.entries(KO)) {
 const pats = Object.keys(KO).filter((k) => k.includes('{}')).map((k) => new RegExp('^' + k.split('{}').map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.+?') + '$', 's'));
 const covered = (s) => KO[s] !== undefined || pats.some((r) => r.test(s)) || (/ ×\d+$/.test(s) && covered(s.replace(/ ×\d+$/, '')));
 
+
+// string literals (line, text) from a source file, skipping comments; template ${...} becomes {}
+function* literals(text) {
+  let i = 0, line = 1;
+  while (i < text.length) {
+    const c = text[i];
+    if (c === '\n') { line++; i++; continue; }
+    if (c === '/' && text[i + 1] === '/') { while (i < text.length && text[i] !== '\n') i++; continue; }
+    if (c === '/' && text[i + 1] === '*') { i += 2; while (!(text[i] === '*' && text[i + 1] === '/')) { if (text[i] === '\n') line++; i++; } i += 2; continue; }
+    if (c === "'" || c === '"' || c === '`') {
+      let j = i + 1, str = ''; const L = line;
+      while (text[j] !== c) {
+        if (text[j] === '\\') { str += text[j] + text[j + 1]; j += 2; continue; }
+        if (c === '`' && text[j] === '$' && text[j + 1] === '{') { let d = 1; j += 2; while (d) { if (text[j] === '{') d++; if (text[j] === '}') d--; j++; } str += '{}'; continue; }
+        if (text[j] === '\n') line++;
+        str += text[j]; j++;
+      }
+      i = j + 1; yield [L, str.replace(/\\'/g, "'").replace(/\\"/g, '"')]; continue;
+    }
+    i++;
+  }
+}
+
 // 1. t('...') keys and 3. remaining strings
 const remaining = {};
 let tKeys = 0;
@@ -35,17 +58,15 @@ for (const f of files) {
     const key = m[2].replace(/\\'/g, "'").replace(/\$\{[^}]*\}/g, '{}');
     if (!covered(key)) errors.push(`${f}: missing Korean for t(${JSON.stringify(key)})`);
   }
-  const lines = text.split('\n'); remaining[f] = [];
-  lines.forEach((line, i) => {
-    if (/^\s*(import|\/\/)|console\.|querySelector|classList|getElementById|className|style\./.test(line)) return;
-    for (const m of line.matchAll(/(['"`])((?:\\.|(?!\1).){4,}?)\1/g)) {
-      const raw = m[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
-      const s = raw.replace(/\$\{[^}]*\}/g, '{}');
-      if (!/[A-Za-z]{3}/.test(s) || !/ /.test(s) || /^[#.\w-]+( [#.\w>-]+)*$/.test(s) && !/[A-Z]/.test(s[0])) continue;
-      if (/^(M|L|<|#|\.|https?:|data:|rgba?\(|[a-z]+:)/.test(s) || /[=;]{1}/.test(s) && /<|px|rgb/.test(s)) continue;
-      if (!covered(s) && !covered(s.replace(/\{\}/g, ''))) remaining[f].push(`${i + 1}: ${s.slice(0, 90)}`);
-    }
-  });
+  remaining[f] = [];
+  for (const [line, k] of literals(text)) {
+    if (!/[A-Za-z]{3}/.test(k) || !(/ /.test(k) || /^[A-Z][a-z]+$/.test(k)) || covered(k)) continue;
+    if (/^(<|#|\.|\\n|bold |attribute |uniform |varying |https?:|\.\/|[A-Za-z]+: )|[<>{};]|\.(glb|jpg|png)$|^(Digit|Key|Numpad)/.test(k) && !/^[A-Z][a-z]+, /.test(k)) continue;
+    if (/^[A-Z][a-z]+( [A-Z][a-z]+)?$/.test(k) && !/ /.test(k) && /^(Space|Shift|Ctrl|Mouse|Esc|Tab|Enter|Escape|Abel|Clara|Josiah|Mabel|Silas|Nettie|Ruben|Opal|Cyrus|Della|Amos|Pearl|ArrowUp|ArrowDown)$/.test(k)) continue; // key names, first names (translated as 'Abel {}' patterns)
+    if (f === 'models.js' || /serif$|^toast $/.test(k)) continue; // animation/bone names, font stacks, css class pieces
+    if (Object.keys(KO).some((key) => key.includes(k.trim())) && k.trim().length > 3) continue; // fragment of a longer, translated message
+    remaining[f].push(`${line}: ${k.slice(0, 90)}`);
+  }
 }
 
 // 1b. story keys (D2): every player-facing literal in story.js / actors.js / world.js that is passed through a known text slot
@@ -79,6 +100,27 @@ for (const [f, re] of storyChecks) {
   for (const m of act.matchAll(/pick\(\[([^\]]*)\]\)/g)) for (const x of m[1].matchAll(/'((?:[^'\\]|\\.)*)'/g)) checkKey('actors.js', x[1]);
   for (const m of act.matchAll(/toast\('((?:[^'\\]|\\.)*)'/g)) { const k = m[1].replace(/^"|"$/g, ''); checkKey('actors.js', k.replace(/\\'/g, "'")); }
   for (const m of act.matchAll(/toast\('"((?:[^'\\]|\\.)*)"'/g)) checkKey('actors.js', m[1]);
+}
+
+// 1c. (D3) run-time composed text: names / prompts built from several parts must translate completely
+{
+  const { tx } = await import('../src/i18n.js');
+  const story = readFileSync(new URL('story.js', src), 'utf8'), core = readFileSync(new URL('core.js', src), 'utf8');
+  const list = (re) => [...(story.match(re)?.[1] ?? '').matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((x) => x[1]);
+  const first = list(/const first = \[([^\]]*)\]/), last = list(/last = \[([^\]]*)\]/);
+  const bF = list(/const name = `\$\{pick\(\[([^\]]*)\]/), bL = list(/\} \$\{pick\(\[([^\]]*)\]\)\}`/);
+  const probes = [];
+  for (const a of first) for (const b of last) probes.push(`${a} ${b}`);
+  for (const a of bF) for (const b of bL) probes.push(`${a} ${b}`);
+  for (const sp of ['deer', 'wolf', 'rabbit', 'cow', 'horse']) probes.push(`[E] Skin ${sp}`);
+  for (const h of ['the mare', 'Juniper', 'Ember', 'Marigold']) probes.push(`${h} is too far away.`, `${h} crunches happily.`, `[E] Mount ${h}    [B] Pat`, `You pat ${h}. She leans into your hand.`);
+  const wblock = core.slice(core.indexOf('export const WEAPONS'), core.indexOf('};', core.indexOf('export const WEAPONS')));
+  for (const m of wblock.matchAll(/name: '([^']+)'/g)) probes.push(`You don't own a ${m[1].toLowerCase()} yet.`);
+  for (const id of ['revolverAmmo', 'rifleAmmo', 'arrows']) { const m = new RegExp(`${id}: \\{ name: '([^']+)'`).exec(core); if (m) probes.push(`Out of ${m[1].toLowerCase()}.`); }
+  for (const m of core.matchAll(/name: '([^']+)'/g)) probes.push(`Used ${m[1]}.`, `${m[1]} ×3`);
+  for (const a of ['Sorrel trout', 'channel catfish', 'bluegill', 'river perch']) probes.push(`You landed a 2.5 lb ${a}!`);
+  for (const p of probes) { const r = tx(p); if (/[A-Za-z]{3}/.test(r.replace(/\[[A-Z]\]/g, '')) && !/^\W*\$?[\d.]+\W*$/.test(r)) errors.push(`run-time text not fully Korean: ${JSON.stringify(p)} -> ${JSON.stringify(r)}`); }
+  console.log(`composed run-time probes checked: ${probes.length}`);
 }
 
 console.log(`dictionary: ${Object.keys(KO).length} entries, t() keys checked: ${tKeys}, story keys checked: ${storyKeys}`);
