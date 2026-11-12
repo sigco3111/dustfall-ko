@@ -47,7 +47,41 @@ for (const f of files) {
     }
   });
 }
-console.log(`dictionary: ${Object.keys(KO).length} entries, t() keys checked: ${tKeys}`);
+
+// 1b. story keys (D2): every player-facing literal in story.js / actors.js / world.js that is passed through a known text slot
+//     must be covered by the dictionary: say()/N() lines, choices, obj/title/recap, names, building signs, bounty/greeting/event lists.
+const BT = '\u0060';
+const lit = "(?:'((?:[^'\\\\]|\\\\.)*)'|\"((?:[^\"\\\\]|\\\\.)*)\"|" + BT + "((?:[^" + BT + "\\\\]|\\\\.)*)" + BT + ")";
+const storyChecks = [
+  ['story.js', new RegExp("\\b(?:say\\([^,()]+,\\s*|N\\(\\s*|obj:\\s*|title:\\s*|recap:\\s*|line:\\s*|name:\\s*|desc:\\s*)" + lit, 'g')],
+  ['world.js', new RegExp("\\b(?:sign:\\s*|signMesh\\()" + lit, 'g')],
+  ['actors.js', new RegExp("\\b(?:name:\\s*|text:\\s*)" + lit, 'g')],
+];
+let storyKeys = 0;
+function checkKey(f, raw) {
+  const key = raw.replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/\$\{[^}]*\}/g, '{}');
+  if (!/[A-Za-z]{2}/.test(key)) return;
+  storyKeys++;
+  if (!covered(key) && !covered(key.replace(/\{\}/g, ''))) errors.push(`${f}: story text without Korean: ${JSON.stringify(key.slice(0, 80))}`);
+}
+for (const [f, re] of storyChecks) {
+  const text = readFileSync(new URL(f, src), 'utf8');
+  for (const m of text.matchAll(re)) { const raw = m[1] ?? m[2] ?? m[3]; if (raw !== undefined) checkKey(f, raw); }
+}
+// string lists: bounty names/crimes/greetings, townsfolk names, horse names, event NPC names, say('Name', ...)
+{
+  const text = readFileSync(new URL('story.js', src), 'utf8');
+  for (const m of text.matchAll(/(?:pick\(|const (?:names|first|last|GREETS)\s*=\s*)\[([^\]]*)\]/g)) for (const x of m[1].matchAll(/'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"/g)) {
+    const w = x[1] ?? x[2]; storyKeys++; if (!covered(w) && !covered(w + ' Test')) errors.push(`story.js: name/word without Korean: ${w}`);
+  }
+  for (const m of text.matchAll(/say\('((?:[^'\\]|\\.)*)'/g)) checkKey('story.js', m[1]);
+  const act = readFileSync(new URL('actors.js', src), 'utf8');
+  for (const m of act.matchAll(/pick\(\[([^\]]*)\]\)/g)) for (const x of m[1].matchAll(/'((?:[^'\\]|\\.)*)'/g)) checkKey('actors.js', x[1]);
+  for (const m of act.matchAll(/toast\('((?:[^'\\]|\\.)*)'/g)) { const k = m[1].replace(/^"|"$/g, ''); checkKey('actors.js', k.replace(/\\'/g, "'")); }
+  for (const m of act.matchAll(/toast\('"((?:[^'\\]|\\.)*)"'/g)) checkKey('actors.js', m[1]);
+}
+
+console.log(`dictionary: ${Object.keys(KO).length} entries, t() keys checked: ${tKeys}, story keys checked: ${storyKeys}`);
 console.log('remaining English-looking strings per file (approximate, includes non-UI strings):');
 for (const f of files) console.log(`  ${f.padEnd(11)} ${remaining[f].length}`);
 if (process.argv.includes('--list')) for (const f of files) for (const l of remaining[f]) console.log(`${f}:${l}`);
