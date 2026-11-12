@@ -285,4 +285,6 @@ export const KO = {
   // ----- event NPC (stranded traveller) -----
   'The wolves! Shoot them, for mercy\'s sake!': '늑대다! 제발 어서 쏴 주시오!', 'God keep you, friend.': '하느님이 당신을 지켜 주시길, 친구.',
   'I thought I was wolf supper. Take this — {} is all I carry, and you\'ve earned every cent.': '늑대 밥이 되는 줄 알았소. 이걸 받으시오. 가진 건 {0}뿐이지만 한 푼도 아깝지 않소.',
+  // ----- D3: names composed at run time (skinning prompts, horse name, lower-case weapon names) -----
+  'deer': '사슴', 'wolf': '늑대', 'rabbit': '토끼', 'cow': '소', 'horse': '말', 'the mare': '암말', 'fists': '맨주먹',
 };
