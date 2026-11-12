@@ -8,6 +8,7 @@ import { initUI } from './ui.js';
 import { initStory } from './story.js';
 import { loadAssets } from './assets.js';
 import { updateAnimations } from './models.js';
+import { t } from './i18n.js';
 
 const canvas = document.getElementById('c');
 const renderer = G.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
@@ -25,6 +26,8 @@ addEventListener('resize', () => {
 });
 
 const loading = document.getElementById('loading');
+loading.querySelector('span').textContent = t('Saddling up…');
+document.title = t('Dustfall');
 await loadAssets((f) => { loading.querySelector('i').style.width = Math.round(f * 100) + '%'; });
 loading.remove();
 G.time = 17.4;                 // golden hour behind the title card

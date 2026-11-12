@@ -1,7 +1,7 @@
 :root {
   --cream: #f1e3c6; --ink: #1d1410; --red: #b3261e; --mustard: #e0a526; --teal: #23404a; --paper: #e6d3ac;
-  --slab: Rockwell, "Roboto Slab", "Rockwell Nova", Georgia, serif;
-  --body: Georgia, "Times New Roman", serif;
+  --slab: Rockwell, "Roboto Slab", "Rockwell Nova", Georgia, "Noto Serif KR", "Nanum Myeongjo", "Batang", serif;
+  --body: Georgia, "Times New Roman", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #000; font-family: var(--body); color: var(--cream); user-select: none; }
@@ -120,3 +120,15 @@ kbd { font-family: var(--slab); font-weight: 700; background: var(--ink); color:
 #loading span { letter-spacing: .3em; text-transform: uppercase; font-size: 13px; }
 #loading b { display: block; width: 320px; height: 8px; margin: 18px auto 0; background: rgba(241, 227, 198, .2); }
 #loading i { display: block; height: 100%; width: 0; background: var(--mustard); transition: width .2s; }
+
+/* Korean: keep words together, relax the wide letter-spacing meant for Latin capitals */
+html[lang="ko"] body { word-break: keep-all; line-break: strict; }
+html[lang="ko"] .obj-title, html[lang="ko"] #banner .b1, html[lang="ko"] #banner .b2, html[lang="ko"] #dialogue .who,
+html[lang="ko"] .poster .pre, html[lang="ko"] .poster .sub, html[lang="ko"] .mhead h2, html[lang="ko"] .mbody h3, html[lang="ko"] #duel, html[lang="ko"] #death div { letter-spacing: .04em; }
+html[lang="ko"] #banner .b1 { font-size: 48px; }
+/* title screen: language switch and credit line */
+.langs { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+.langs button { font-size: 14px; padding: 4px 14px; opacity: .65; }
+.langs button.on { opacity: 1; outline: 2px solid var(--mustard); }
+.credit { margin-top: 8px; font-size: 12px; opacity: .75; }
+.credit a { color: inherit; }

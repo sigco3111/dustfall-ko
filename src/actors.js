@@ -1,6 +1,7 @@
 // Everyone and everything that lives in the basin: townsfolk, lawmen, outlaws, wildlife.
 import * as THREE from 'three';
-import { G, rand, pick, clamp, angLerp, sfx, addHonor, addItem, addMoney, fmt } from './core.js';
+import { G, rand, pick, clamp, angLerp, sfx, addHonor, addItem, addMoney, fmt, ITEMS } from './core.js';
+import { tx } from './i18n.js';
 import { groundHeight, resolveCollision, rayBlocked, fx, SITES, siteDist, nearestSite, riverX, terrainH, inTown } from './world.js';
 import { makeHuman, poseHuman, makeQuad, poseQuad, QUADS, humanAction, SIT_DROP } from './models.js';
 
@@ -135,15 +136,16 @@ export function lootActor(a) {
   if (a.kind === 'human') {
     const cash = a.cash ?? (a.faction === 'civil' ? rand(0.5, 5) : rand(2, 12));
     addMoney(cash);
-    let msg = `Looted ${fmt(Math.round(cash * 100) / 100)}`;
-    if (a.faction !== 'civil' && Math.random() < 0.75) { const n = 3 + Math.floor(rand(7)); addItem('revolverAmmo', n); msg += `, ${n} cartridges`; }
-    if (Math.random() < 0.15) { addItem('whiskey'); msg += ', rye whiskey'; }
+    const got = [fmt(Math.round(cash * 100) / 100)];
+    if (a.faction !== 'civil' && Math.random() < 0.75) { const n = 3 + Math.floor(rand(7)); addItem('revolverAmmo', n); got.push(tx(`${n} cartridges`)); }
+    if (Math.random() < 0.15) { addItem('whiskey'); got.push(tx('Rye Whiskey')); }
+    const msg = 'Looted ' + got.join(', ');
     if (a.faction === 'civil' || a.faction === 'law') addHonor(-2);
     G.ui.toast(msg); sfx.coin();
   } else {
     const gains = { deer: [['rawMeat', 2], ['deerPelt', 1]], wolf: [['rawMeat', 1], ['wolfPelt', 1]], rabbit: [['rawMeat', 1], ['rabbitPelt', 1]], cow: [['rawMeat', 3], ['cowHide', 1]], horse: [] }[a.species] || [];
     for (const [id, n] of gains) addItem(id, n);
-    G.ui.toast(gains.length ? 'Skinned: ' + gains.map(([id, n]) => `${n} × ${id === 'rawMeat' ? 'raw meat' : id.replace('Pelt', ' pelt').replace('Hide', ' hide')}`).join(', ') : 'Nothing worth taking.');
+    G.ui.toast(gains.length ? 'Skinned: ' + gains.map(([id, n]) => `${n} × ${tx(ITEMS[id].name)}`).join(', ') : 'Nothing worth taking.');
     a.model.traverse((m) => { if (m.isSkinnedMesh) m.material = bareMat; });
   }
 }
